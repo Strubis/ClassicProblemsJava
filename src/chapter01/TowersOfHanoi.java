@@ -1,5 +1,7 @@
 package chapter01;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -14,6 +16,61 @@ import java.util.Stack;
  * @see David Kopec - Classic Computer Science Problems in Java
  * */
 public class TowersOfHanoi {
+	
+	/**
+	 * Solucao do desafio proposto pelo autor: realizar a implementacao do algoritmo
+	 * para n torres.
+	 * */
+	public static class HanoiMultipleTowers{
+		private static int numDiscs = 0;
+		private static int numTowers = 0;
+		
+		// Uma lista das pilhas/torres
+		public final List<Stack<Integer>> towers;
+		
+		/**
+		 * Constroi as torres de hanoi com a quantidade determinada de discos.
+		 * 
+		 * @param numTowers quantidade de torres
+		 * @param numDiscs quantidade de discos
+		 * */
+		HanoiMultipleTowers(int numTowers, int numDiscs){
+			towers = new ArrayList<>();
+			this.numTowers = numTowers;
+			
+			for(int i = 0; i < numTowers; i++) {
+				towers.add( new Stack<Integer>() );
+			}
+			
+			this.numDiscs = numDiscs;
+			for(int i = 1; i <= numDiscs; i++) {
+				towers.get(0).push( i );
+			}
+		}
+		
+		// Sem alteracoes nessa parte do algoritmo
+		private void move(Stack<Integer> begin, Stack<Integer> end, Stack<Integer> temp, int n) {
+			if( begin.isEmpty() ) {
+				return;
+			}
+			
+			if( n == 1 ) {
+				end.push( begin.pop() );
+			}else {
+				move(begin, temp, end, n - 1);
+				move(begin, end, temp, n);
+				move(temp, end, begin, n - 1);
+			}
+		}
+		
+		/**
+		 *  Mantemos a primeira torre sendo a inicial e a ultima sendo a final, pegamos a 
+		 * 	torre mediapara utilizarmos como temp.
+		 */
+		public void solve() {
+			move(towers.get(0), towers.get(numTowers - 1), towers.get(numTowers / 2), numDiscs);
+		}
+	}
 	
 	public static class Hanoi{
 		private static int numDiscs = 0;
@@ -88,5 +145,15 @@ public class TowersOfHanoi {
 		System.out.println( "\tTorre A: " + hanoi.towerA );
 		System.out.println( "\tTorre B: " + hanoi.towerB );
 		System.out.println( "\tTorre C: " + hanoi.towerC );
+		
+		HanoiMultipleTowers hanoiMultiple = new HanoiMultipleTowers(5, 7);
+		
+		System.out.println("\nHanoi Multiple Towers:");
+		System.out.println("Antes de iniciar:");
+		hanoiMultiple.towers.forEach(tower -> System.out.println("\t" + tower));
+		hanoiMultiple.solve();
+		
+		System.out.println("Depois de terminar:");
+		hanoiMultiple.towers.forEach(tower -> System.out.println("\t" + tower));
 	}
 }
