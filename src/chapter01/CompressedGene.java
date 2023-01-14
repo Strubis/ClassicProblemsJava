@@ -23,6 +23,8 @@ public class CompressedGene {
                 + "ATATATAGCCATGGATCGATTATA";
         
         compress( gene );
+        // Tamanho do conjunto de bits apos a compressao
+        System.out.println("Bits: " + bitSet.length());
         final String decompressed = decompress();
         
         System.out.println(decompressed);
