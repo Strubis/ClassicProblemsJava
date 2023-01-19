@@ -32,6 +32,7 @@ public class Gene {
 				thenComparing((Codon c) -> c.third);
 		
 		Codon(String codonStr){
+			codonStr = codonStr.toUpperCase(); // garante a formatacao ideal
 			first = Nucleotide.valueOf( codonStr.substring(0, 1) );
 			second = Nucleotide.valueOf( codonStr.substring(1, 2) );
 			third = Nucleotide.valueOf( codonStr.substring(2, 3) );
@@ -55,11 +56,38 @@ public class Gene {
 		}
 	}
 	
+	/**
+	 * Realiza a busca linear do codon passado como parametro. No pior
+	 * caso a complexidade de uma busca linear e O(n), n sendo o tamanho
+	 * total de elementos, ja que devera ser feita uma varredura por
+	 * completo.
+	 * 
+	 * @param key O codon que sera procurado
+	 * @return true se o codon for encontrado, caso contrario false
+	 * */
+	private boolean linearContains(Codon key) {
+		for(Codon codon : codons) {
+			if(codon.compareTo(key) == 0) return true;
+		}
+		
+		return false;
+	}
+	
 	public static void main(String[] args) {
 		String geneStr = "ACGTGGCTCTCTAACGTACGTACGTACGGGGTTTATATATACCCTAGGACTCCCTTT";
 		
 		Gene gene = new Gene(geneStr);
 		gene.codons.forEach(
 				(codon) -> System.out.println(codon.first + "" + codon.second + "" + codon.third));
+		
+		System.out.println();
+		
+		// Testando a Busca Linear
+		Codon acg = new Codon("ACG");
+		Codon gat = new Codon("GAT");
+		Codon ttg = new Codon("TTG");
+		System.out.println("ACG foi encontrado? " + gene.linearContains(acg));
+		System.out.println("GAT foi encontrado? " + gene.linearContains(gat));
+		System.out.println("TTG foi encontrado? " + gene.linearContains(ttg));
 	}
 }
