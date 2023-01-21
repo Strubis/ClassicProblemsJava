@@ -1,6 +1,8 @@
 package chapter02;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 
 /**
@@ -73,6 +75,46 @@ public class Gene {
 		return false;
 	}
 	
+	/**
+	 * Realiza a busca binaria do codon passado como parametro. No pior
+	 * caso a complexidade chega a O(log n). A busca e feita verificando
+	 * o elemento do meio do array ordenado, se for menor quer dizer que
+	 * o elemento procurado esta na direita do array, se for maior o 
+	 * elemento esta na esquerda do array e se for igual entao foi 
+	 * encontrado. Sempre dividindo o array pela metade e repetindo os
+	 * passos ate encontrar ou nao.
+	 * 
+	 * @param key O codon que sera procurado
+	 * @return true se o codon for encontrado, caso contrario false
+	 * */
+	private boolean binarySearch(Codon key) {
+		// Uma copia do array garantindo que estara ordenado
+		ArrayList<Codon> sortedCodons = new ArrayList<>(codons);
+		Collections.sort(sortedCodons);
+		
+		// Variaveis usadas para auxiliar na busca
+		int low = 0;
+		int high = codons.size() - 1;
+		
+		// Mantemos a busca enquanto o limite e menor que o tamanho do array
+		while( low <= high ) {
+			// Elemento do meio para verificar para qual lado iremos
+			int middle = (low + high) / 2;
+			
+			int comparision = codons.get(middle).compareTo(key);
+			if(comparision < 0) { // Elemento do meio e menor que o procurado
+				low = middle + 1;
+			}else if(comparision > 0) { // Elemento do meio e maior que o procurado
+				high = middle - 1;
+			}else {
+				// Elemento encontrado
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	public static void main(String[] args) {
 		String geneStr = "ACGTGGCTCTCTAACGTACGTACGTACGGGGTTTATATATACCCTAGGACTCCCTTT";
 		
@@ -80,14 +122,22 @@ public class Gene {
 		gene.codons.forEach(
 				(codon) -> System.out.println(codon.first + "" + codon.second + "" + codon.third));
 		
-		System.out.println();
-		
-		// Testando a Busca Linear
 		Codon acg = new Codon("ACG");
 		Codon gat = new Codon("GAT");
 		Codon ttg = new Codon("TTG");
+		
+		// Testando a Busca Linear
+		System.out.println();
 		System.out.println("ACG foi encontrado? " + gene.linearContains(acg));
 		System.out.println("GAT foi encontrado? " + gene.linearContains(gat));
 		System.out.println("TTG foi encontrado? " + gene.linearContains(ttg));
+		
+		// Testando a Busca Binaria
+		System.out.println();
+		System.out.println("ACG foi encontrado? " + gene.binarySearch(acg));
+		System.out.println("GAT foi encontrado? " + gene.binarySearch(gat));
+		System.out.println("TTG foi encontrado? " + gene.binarySearch(ttg));
+		// Exemplo utilizando a bibliotece padrao do Java
+		System.out.println("ACG foi encontrado (lib)? " + (Collections.binarySearch(gene.codons, acg) >= 0 ? "true" : "false") );
 	}
 }
