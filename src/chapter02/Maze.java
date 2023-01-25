@@ -1,6 +1,8 @@
 package chapter02;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -47,6 +49,38 @@ public class Maze {
 				}
 			}
 		}
+	}
+	
+	// Metodo que verifica se chegamos no nosso objetivo
+	public boolean goalTest(MazeLocation ml) {
+		return goal.equals(ml);
+	}
+	
+	// Metodo que retorna os caminhos possiveis para andar, ou seja, em branco
+	public List<MazeLocation> successors(MazeLocation ml){
+		List<MazeLocation> locations = new ArrayList<>();
+		
+		// Acima
+		if( ml.row + 1 < rows && grid[ml.row + 1][ml.column] != Cell.BLOCKED ) {
+			locations.add( new MazeLocation(ml.row + 1, ml.column));
+		}
+		
+		// Abaixo
+		if( ml.row - 1 >= 0 && grid[ml.row - 1][ml.column] != Cell.BLOCKED ) {
+			locations.add( new MazeLocation(ml.row - 1, ml.column));
+		}
+		
+		// Direita
+		if( ml.column + 1 < columns && grid[ml.row][ml.column + 1] != Cell.BLOCKED ) {
+			locations.add( new MazeLocation(ml.row, ml.column + 1));
+		}
+		
+		// Esquerda
+		if( ml.column - 1 > 0 && grid[ml.row][ml.column - 1] != Cell.BLOCKED ) {
+			locations.add( new MazeLocation(ml.row, ml.column - 1));
+		}
+		
+		return locations;
 	}
 	
 	@Override
