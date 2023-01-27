@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import chapter02.GenericSearch.Node;
+
 /**
  * O problema do labirinto
  * 
@@ -83,6 +85,24 @@ public class Maze {
 		return locations;
 	}
 	
+	void mark(List<MazeLocation> path) {
+		for(MazeLocation ml : path) {
+			grid[ml.row][ml.column] = Cell.PATH;
+		}
+		
+		grid[start.row][start.column] = Cell.START;
+		grid[goal.row][goal.column] = Cell.GOAL;
+	}
+	
+	void clear(List<MazeLocation> path) {
+		for(MazeLocation ml : path) {
+			grid[ml.row][ml.column] = Cell.EMPTY;
+		}
+		
+		grid[start.row][start.column] = Cell.START;
+		grid[goal.row][goal.column] = Cell.GOAL;
+	}
+	
 	@Override
 	public String toString() {
 		// Retorna o labirinto formatado para impressao no console
@@ -147,6 +167,17 @@ public class Maze {
 	public static void main(String[] args) {
 		Maze maze = new Maze();
 		System.out.println(maze);
+		
+		Node<MazeLocation> solution1 = GenericSearch.dfs(maze.start, maze::goalTest, maze::successors);
+		
+		if(solution1 == null) {
+			System.out.println("Sem solucao possivel utilizando DFS!");
+		}else {
+			List<MazeLocation> path1 = GenericSearch.nodeToPath(solution1);
+			maze.mark(path1);
+			System.out.println(maze);
+			maze.clear(path1);
+		}
 	}
 
 }
