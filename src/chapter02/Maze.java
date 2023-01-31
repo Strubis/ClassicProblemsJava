@@ -166,17 +166,30 @@ public class Maze {
 	
 	public static void main(String[] args) {
 		Maze maze = new Maze();
-		System.out.println(maze);
+		System.out.println("Original Maze:\n" + maze);
 		
 		Node<MazeLocation> solution1 = GenericSearch.dfs(maze.start, maze::goalTest, maze::successors);
 		
 		if(solution1 == null) {
 			System.out.println("Sem solucao possivel utilizando DFS!");
 		}else {
+			System.out.println("Utilizando DFS:");
 			List<MazeLocation> path1 = GenericSearch.nodeToPath(solution1);
 			maze.mark(path1);
 			System.out.println(maze);
 			maze.clear(path1);
+		}
+		
+		Node<MazeLocation> solution2 = GenericSearch.bfs(maze.start, maze::goalTest, maze::successors);
+		
+		if(solution2 == null) {
+			System.out.println("Sem solucao possivel utilizando BFS!");
+		}else {
+			System.out.println("Utilizando BFS:");
+			List<MazeLocation> path2 = GenericSearch.nodeToPath(solution2);
+			maze.mark(path2);
+			System.out.println(maze);
+			maze.clear(path2);
 		}
 	}
 
