@@ -2,7 +2,9 @@ package chapter02;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 import java.util.function.Function;
@@ -91,6 +93,41 @@ public class GenericSearch {
 		}
 		
 		return null; // Procuramos e nao foi encontrado
+	}
+	
+	// Busca em Largura -> BFS
+	static <T> Node<T> bfs(T initial, Predicate<T> goalTest, Function<T, List<T>> successors){
+		// frontier sao lugares nao visitados
+		Queue<Node<T>> frontier = new LinkedList<>();
+		frontier.offer(new Node<>(initial, null));
+		
+		// explored sao lugares para visitar
+		Set<T> explored = new HashSet<>();
+		explored.add(initial);
+		
+		// Continua a busca enquanto tem lugar para visitar
+		while(!frontier.isEmpty()) {
+			Node<T> currentNode = frontier.poll();
+			T currentState = currentNode.state;
+			
+			// Se encontrarmos entao retornamos
+			if(goalTest.test(currentState)) {
+				return currentNode;
+			}
+			
+			// Checa para onde devemos ir e se nao foi explorado
+			for(T child : successors.apply(currentState)) {
+				if(explored.contains(child)) {
+					continue; // Pula para o proximo caminho
+				}
+				
+				explored.add(child);
+				frontier.offer(new Node<>(child, currentNode));
+			}
+		}
+		
+		// Retorna null caso nao tenha encontrado
+		return null;
 	}
 	
 	// Caminho do no
