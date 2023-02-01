@@ -16,6 +16,7 @@ import chapter02.GenericSearch.Node;
  * */
 public class Maze {
 	private final int rows, columns;
+	private static int stepNum;
 	private final MazeLocation start, goal;
 	private Cell[][] grid;
 	
@@ -85,9 +86,40 @@ public class Maze {
 		return locations;
 	}
 	
+	/**
+	 * De acordo com uma determinada localizacao, retorna uma linha reta em direcao
+	 * ao objetivo, utilizando o Teorema de Pitagoras.
+	 * 
+	 * @param ml a localizacao
+	 * @return a distancia em linha reta ate o objetivo
+	 * */
+	double euclideanDistance(MazeLocation ml) {
+		int xDist = ml.column - goal.column;
+		int yDist = ml.row - goal.row;
+		
+		return Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
+	}
+	
+	/**
+	 * Calcula uma distancia de um ponto ate o objetivo final, utilizando o 
+	 * calculo da distancia Manhattan, onde soma-se o numero de linhas horizontais
+	 * e verticais que serao utilizadas para chegar.
+	 * 
+	 * @param ml o ponto
+	 * @return a distancia Manhattan do ponto ate o objetivo final
+	 * */
+	double manhattanDistance(MazeLocation ml) {
+		int xDis = Math.abs(ml.column - goal.column);
+		int yDis = Math.abs(ml.row - goal.row);
+		
+		return xDis + yDis;
+	}
+	
 	void mark(List<MazeLocation> path) {
+		stepNum = 0;
 		for(MazeLocation ml : path) {
 			grid[ml.row][ml.column] = Cell.PATH;
+			stepNum++;
 		}
 		
 		grid[start.row][start.column] = Cell.START;
@@ -178,6 +210,7 @@ public class Maze {
 			maze.mark(path1);
 			System.out.println(maze);
 			maze.clear(path1);
+			System.out.println("Quantidade de passos: " + stepNum + "\n");
 		}
 		
 		Node<MazeLocation> solution2 = GenericSearch.bfs(maze.start, maze::goalTest, maze::successors);
@@ -190,6 +223,20 @@ public class Maze {
 			maze.mark(path2);
 			System.out.println(maze);
 			maze.clear(path2);
+			System.out.println("Quantidade de passos: " + stepNum + "\n");
+		}
+		
+		Node<MazeLocation> solution3 = GenericSearch.astar(maze.start, maze::goalTest, maze::successors, maze::manhattanDistance);
+		
+		if(solution3 == null) {
+			System.out.println("Sem solucao possivel utilizando A*!");
+		}else {
+			System.out.println("Utilizando A*:");
+			List<MazeLocation> path3 = GenericSearch.nodeToPath(solution3);
+			maze.mark(path3);
+			System.out.println(maze);
+			maze.clear(path3);
+			System.out.println("Quantidade de passos: " + stepNum + "\n");
 		}
 	}
 
