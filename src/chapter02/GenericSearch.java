@@ -1,14 +1,18 @@
 package chapter02;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.ToDoubleFunction;
 
 /**
  * Algoritmos de busca generica, utilizando o objeto generico T
@@ -126,6 +130,43 @@ public class GenericSearch {
 			}
 		}
 		
+		// Retorna null caso nao tenha encontrado
+		return null;
+	}
+	
+	// Busca A*
+	static <T> Node<T> astar(T initial, Predicate<T> goalTest, Function<T, List<T>> successors, ToDoubleFunction<T> heuristic){
+		// frontier sao lugares nao visitados
+		PriorityQueue<Node<T>> frontier = new PriorityQueue<>();
+		frontier.offer(new Node<>(initial, null, 0.0, heuristic.applyAsDouble(initial)));
+		
+		// explored sao lugares para visitar
+		Map<T, Double> explored = new HashMap<>();
+		explored.put(initial, 0.0);
+		
+		// Continua a busca enquanto tem lugar para visitar
+		while(!frontier.isEmpty()) {
+			Node<T> currentNode = frontier.poll();
+			T currentState = currentNode.state;
+			
+			// Se encontrarmos entao retornamos
+			if(goalTest.test(currentState)) {
+				return currentNode;
+			}
+			
+			// Checa para onde devemos ir e se nao foi explorado
+			for(T child : successors.apply(currentState)) {
+				// 1 assume uma grid, onde precisamos do custo da funcao para aplicarmos o algoritmo
+				double newCost = currentNode.cost + 1;
+				
+				if(!explored.containsKey(child) || explored.get(child) > newCost) {
+					explored.put(child, newCost);
+					frontier.offer(new Node<>(child, currentNode, newCost, heuristic.applyAsDouble(child)));
+				}
+					
+			}
+		}
+				
 		// Retorna null caso nao tenha encontrado
 		return null;
 	}
