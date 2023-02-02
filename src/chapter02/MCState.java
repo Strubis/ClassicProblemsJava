@@ -2,7 +2,10 @@ package chapter02;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
+
+import chapter02.GenericSearch.Node;
 
 /**
  * Missionarios e Canibais
@@ -91,13 +94,71 @@ public class MCState {
 		sucs.removeIf(Predicate.not(MCState::isLegal));
 		return sucs;
 	}
+	
+	static void displaySolution(List<MCState> path) {
+		if(path.size() == 0) {
+			return; // checa a sanidade
+		}
+		
+		MCState oldState = path.get(0);
+		System.out.println(oldState);
+		
+		for(MCState currentState : path.subList(1, path.size())) {
+			if(currentState.boat) {
+				System.out.printf("%d missionarios e %d canibais movidos de Leste para Oeste.%n", 
+						oldState.em - currentState.em, oldState.ec - currentState.ec);
+			}else {
+				System.out.printf("%d missionarios e %d canibais movidos do Oeste para Leste.%n",
+						oldState.wm - currentState.wm, oldState.wc - currentState.wc);
+			}
+			
+			System.out.println(currentState);
+			oldState = currentState;
+		}
+	}
 
 	@Override
 	public String toString() {
 		return String.format(
 				"No lado Oeste do banco estao %d missionarios e %d canibais.%n"
 				+ "No lado Leste do banco estao %d missionarios e %d canibais.%n"
-				+ "O barco esta no lado %s do banco.", wm, wc, em, ec, boat ? "Oeste" : "Leste");
+				+ "O barco esta no lado %s do banco.%n", wm, wc, em, ec, boat ? "Oeste" : "Leste");
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (boat ? 1231 : 1237);
+		result = prime * result + ec;
+		result = prime * result + em;
+		result = prime * result + wc;
+		result = prime * result + wm;
+		
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MCState other = (MCState) obj;
+		return boat == other.boat && ec == other.ec && em == other.em && wc == other.wc && wm == other.wm;
 	}
 	
+	public static void main(String[] args) {
+		MCState start = new MCState(MAX_NUM, MAX_NUM, true);
+		Node<MCState> solution = GenericSearch.bfs(start, MCState::goalTest, MCState::successors);
+		
+		if(solution == null) {
+			System.out.println("Sem solução possível!");
+		}else {
+			List<MCState> path = GenericSearch.nodeToPath(solution);
+			displaySolution(path);
+		}
+	}
 }
