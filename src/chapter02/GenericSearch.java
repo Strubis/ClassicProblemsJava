@@ -1,6 +1,7 @@
 package chapter02;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 import java.util.function.Function;
@@ -209,6 +211,10 @@ public class GenericSearch {
 		
 		return false;
 	}
+	
+	private static double generateNumbers() {
+		return new Random().nextDouble(1000.12);
+	}
 
 	public static void main(String[] args) {
 		System.out.println("Busca Linear: "
@@ -217,15 +223,36 @@ public class GenericSearch {
 				+ "\n\tEncontrou? " + linearContains(List.of(1, 4, 82, 20, 41, 18, 27), 18));
 		
 		System.out.println("\nBusca Binaria: "
-				+ "\n\tElementos: a, z, f, x, w, b, y "
+				+ "\n\tElementos: a, b, f, i, n, x, z "
 				+ "\n\tProcurado: g "
-				+ "\n\tEncontrou? " + binaryContains(List.of('a', 'z', 'f', 'x', 'w', 'b', 'y'), 'g'));
+				+ "\n\tEncontrou? " + binaryContains(List.of('a', 'b', 'f', 'i', 'n', 'x', 'z'), 'g'));
 		
 		System.out.println("\nBusca Binaria: "
-				+ "\n\tElementos: \"cat\", \"dog\", \"cow\", \"duck\", \"horse\", \"bird\", \"turtle\" "
-				+ "\n\tProcurado: \"fish\" "
-				+ "\n\tEncontrou? " + binaryContains(List.of("cat", "dog", "cow", "duck", "horse", "bird", "turtle"), "fish"));
+				+ "\n\tElementos: \"bird\", \"cat\", \"cow\", \"dog\", \"duck\", \"horse\", \"turtle\" "
+				+ "\n\tProcurado: \"horse\" "
+				+ "\n\tEncontrou? " + binaryContains(List.of("bird", "cat", "cow", "dog", "duck", "horse", "turtle"), "horse"));
 		
+		// Criacao da lista que sera utilizada para a comparacao
+		List<Double> numbers = new ArrayList<>();
+		for(int i = 0; i < 1000000; i++) {
+			numbers.add(generateNumbers());
+		}
+		
+		Collections.sort(numbers);
+		double lastElement = numbers.get(numbers.size() - 1);
+		System.out.println("\nTestando qual algoritmo eh mais rapido na busca:");
+		
+		long timeLinear = System.currentTimeMillis();
+		System.out.println("Busca Linear ultimo elemento da lista - " 
+		+ lastElement + "\nEncontrou? " + linearContains(numbers, lastElement) );
+		long finalTimeLinear = System.currentTimeMillis() - timeLinear;
+		System.out.println("Tempo (ms): " + finalTimeLinear);
+		
+		long timeBinary = System.currentTimeMillis();
+		System.out.println("\nBusca Binaria ultimo elemento da lista - " 
+		+ lastElement + "\nEncontrou? " + binaryContains(numbers, lastElement) );
+		long finalTimeBinary = System.currentTimeMillis() - timeBinary;
+		System.out.println("Tempo (ms): " + finalTimeBinary);
 	}
 
 }
