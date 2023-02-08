@@ -12,15 +12,18 @@ import chapter02.GenericSearch.Node;
  * O problema consiste em conter um certo numero de missionarios e canibais num lado
  * da ilha, precisando atravessar para o outro lado utilizando um barco. As regras sao:
  * 	- Em qualquer lado da ilha o numero de canibais nao pode ser maior que o de missionarios;
- * 	- No minimo uma pessoa e no maximo duas precisam estar no barco para que ele atravesse;
+ * 	- No minimo uma pessoa e no maximo N - 1 precisam estar no barco para que ele atravesse;
  * 	- Todas devem estar do outro lado no final do problema.
+ * 
+ * *Obs.: algumas mudancas foram realizadas para que o algoritmo funcionasse com N missionarios
+ * 			e canibais.
  * 
  * @author Emerson
  * @since 2023
  * @see David Kopec - Classic Computer Science Problems in Java
  * */
 public class MCState {
-	private static final int MAX_NUM = 3;
+	private static final int MAX_NUM = 5;
 	private final int wm; // missionarios no lado oeste
 	private final int wc; // canibais no lado oeste
 	private final int em; // missionarios no lado leste
@@ -95,6 +98,50 @@ public class MCState {
 		return sucs;
 	}
 	
+	// Metodo para resolucao do algoritmo com N missionarios e canibais
+	static List<MCState> successorsToN(MCState mcs){
+		List<MCState> sucs = new ArrayList<>();
+		
+		if(mcs.boat) {
+			int i = MAX_NUM - 2;
+			while(i >= 0) {
+				if(mcs.wm > i) {
+					sucs.add(new MCState(mcs.wm - i - 1, mcs.wc, !mcs.boat));
+				}
+				
+				if(mcs.wc > i) {
+					sucs.add(new MCState(mcs.wm, mcs.wc - i - 1, !mcs.boat));
+				}
+				
+				i--;
+			}
+			
+			if(mcs.wc > 0 && mcs.wm > 0) {
+				sucs.add(new MCState(mcs.wm - 1, mcs.wc - 1, !mcs.boat));
+			}
+		}else {
+			int i = MAX_NUM - 2;
+			while(i >= 0) {
+				if(mcs.em > i) {
+					sucs.add(new MCState(mcs.wm + i + 1, mcs.wc, !mcs.boat));
+				}
+				
+				if(mcs.ec > i) {
+					sucs.add(new MCState(mcs.wm, mcs.wc + i + 1, !mcs.boat));
+				}
+				
+				i--;
+			}
+			
+			if(mcs.ec > 0 && mcs.em > 0) {
+				sucs.add(new MCState(mcs.wm + 1, mcs.wc + 1, !mcs.boat));
+			}
+		}
+		
+		sucs.removeIf(Predicate.not(MCState::isLegal));
+		return sucs;
+	}
+	
 	static void displaySolution(List<MCState> path) {
 		if(path.size() == 0) {
 			return; // checa a sanidade
@@ -152,7 +199,8 @@ public class MCState {
 	
 	public static void main(String[] args) {
 		MCState start = new MCState(MAX_NUM, MAX_NUM, true);
-		Node<MCState> solution = GenericSearch.bfs(start, MCState::goalTest, MCState::successors);
+//		Node<MCState> solution = GenericSearch.bfs(start, MCState::goalTest, MCState::successors);
+		Node<MCState> solution = GenericSearch.bfs(start, MCState::goalTest, MCState::successorsToN);
 		
 		if(solution == null) {
 			System.out.println("Sem solução possível!");
@@ -160,5 +208,6 @@ public class MCState {
 			List<MCState> path = GenericSearch.nodeToPath(solution);
 			displaySolution(path);
 		}
+		
 	}
 }
