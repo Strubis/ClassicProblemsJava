@@ -38,6 +38,8 @@ public class CSP<V, D> {
 			if(!variables.contains(variable)) {
 				throw new IllegalArgumentException("Variavel na constraint nao esta em CSP.");
 			}
+			
+			constraints.get(variable).add(constraint);
 		}
 	}
 	
