@@ -55,6 +55,19 @@ public class QueensConstraint extends Constraint<Integer, Integer>{
 		return true;
 	}
 	
+	// Mostra um simples tabuleiro com a solucao encontrada
+	private static void showChessboard(Map<Integer, Integer> sol) {
+		for(Integer i : sol.keySet()) {
+			for(int j = 1; j <= 8; j++) {
+				if( j == sol.get(i) ) 
+					System.out.print("Q ");
+				else 
+					System.out.print("* ");
+			}
+			System.out.println();
+		}
+	}
+	
 	public static void main(String[] args) {
 		List<Integer> columns = List.of(1, 2, 3, 4, 5, 6, 7, 8);
 		Map<Integer, List<Integer>> rows = new HashMap<>();
@@ -70,6 +83,7 @@ public class QueensConstraint extends Constraint<Integer, Integer>{
 		if(solution == null){
 			System.out.println("Sem solucao possivel!");
 		}else {
+			showChessboard(solution);
 			System.out.println(solution);
 		}
 	}
