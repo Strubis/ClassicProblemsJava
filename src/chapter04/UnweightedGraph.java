@@ -2,6 +2,9 @@ package chapter04;
 
 import java.util.List;
 
+import chapter02.GenericSearch;
+import chapter02.GenericSearch.*;
+
 /**
  * Grafo sem peso
  * 
@@ -69,5 +72,15 @@ public class UnweightedGraph<V> extends Graph<V, Edge>{
 		cityGraph.addEdge("Philadelphia", "Washington");
 		
 		System.out.println(cityGraph.toString());
+		
+		Node<String> bfsResult = GenericSearch.bfs("Boston", v -> v.equals("Miami"), cityGraph::neighborsOf);
+		
+		if(bfsResult == null) {
+			System.out.println("Sem solucao possivel!");
+		}else {
+			List<String> path = GenericSearch.nodeToPath(bfsResult);
+			System.out.println("Menor caminho de Boston para Miami:");
+			System.out.println(path);
+		}
 	}
 }
