@@ -1,7 +1,10 @@
 package chapter04;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.function.IntConsumer;
 
 /**
  * Grafo com peso
@@ -31,6 +34,58 @@ public class WeightedGraph<V> extends Graph<V, WeightedEdge> {
 	
 	public void addEdge(V first, V second, float weight) {
 		addEdge(indexOf(first), indexOf(second), weight);
+	}
+	
+	public static double totalWeight(List<WeightedEdge> path) {
+		return path.stream().mapToDouble(we -> we.weight).sum();
+	}
+	
+	public List<WeightedEdge> mst(int start){
+		LinkedList<WeightedEdge> result = new LinkedList<>();
+		
+		if(start < 0 || start > (getVertexCount() - 1)) {
+			return result;
+		}
+		
+		PriorityQueue<WeightedEdge> pq = new PriorityQueue<>();
+		// jah visitados
+		boolean[] visited = new boolean[getVertexCount()];
+		
+		// Quando visita uma funcao interna
+		IntConsumer visit = index -> {
+			visited[index] = true; // visitado
+			for(WeightedEdge edge : edgesOf(index)) {
+				// Add todas as edges que vierem daqui para pq
+				if(!visited[edge.v]) {
+					pq.offer(edge);
+				}
+			}
+		};
+		
+		// Comecamos do vertice inicial
+		visit.accept(start);
+		
+		// Enquanto ainda estiver edges
+		while(!pq.isEmpty()) {
+			WeightedEdge edge = pq.poll();
+			
+			if(visited[edge.v]) {
+				continue; // Para nao revisitar
+			}
+			
+			result.add(edge);
+			visit.accept(edge.v); // Visita sua conexao
+		}
+		
+		return result;
+	}
+	
+	public void printWeightedPath(List<WeightedEdge> wp) {
+		for (WeightedEdge edge : wp) {
+			System.out.println(vertexAt(edge.u) + " " + edge.weight + " > " + vertexAt(edge.v));
+		}
+		
+		System.out.println("Total Peso: " + totalWeight(wp));
 	}
 	
 	// Imprime o grafo
@@ -89,5 +144,10 @@ public class WeightedGraph<V> extends Graph<V, WeightedEdge> {
 		cityGraph2.addEdge("Philadelphia", "Washington", 123);
 		
 		System.out.println(cityGraph2);
+		
+		System.out.println("-------------------------------------------");
+		
+		List<WeightedEdge> mst = cityGraph2.mst(0);
+		cityGraph2.printWeightedPath(mst);
 	}
 }
